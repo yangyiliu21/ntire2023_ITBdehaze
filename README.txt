@@ -27,3 +27,7 @@ python test.py --imagenet_model SwinTransformerV2 --cfg configs/swinv2/swinv2_ba
 * Using this command line for generating outputs of test data, the dehazed results could be found in: ./output_img/test/epoch5925_result
 * This testing command line requires GPU memory >= 40 GB to ensure best results
   If GPU memory < 40 GB, please use " --cropping 6 " instead
+  
+  
+ swin transformer pretrained: swinv2_base_patch4_window8_256.pth
+ 
