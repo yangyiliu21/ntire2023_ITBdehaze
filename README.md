@@ -32,10 +32,10 @@ python train.py --data_dir data --imagenet_model SwinTransformerV2 --cfg configs
 
 #### Test
  ```shell
-python test.py --imagenet_model SwinTransformerV2 --cfg configs/swinv2/swinv2_base_patch4_window8_256.yaml --model_save_dir ./output_img/test/epoch5925_result --ckpt_path ./checkpoints/epoch5925.pkl --hazy_data NTIRE2023_Test --cropping 4
+python test.py --imagenet_model SwinTransformerV2 --cfg configs/swinv2/swinv2_base_patch4_window8_256.yaml --model_save_dir ./output_img/test/best_result --ckpt_path ./checkpoints/best.pkl --hazy_data NTIRE2023_Test --cropping 4
  ```
 
-* Using this command line for generating outputs of test data, the dehazed results could be found in: ./output_img/test/epoch5925_result
+* Using this command line for generating outputs of test data, the dehazed results could be found in: ./output_img/test/best_result
 * This testing command line requires GPU memory >= 40 GB to ensure best results
   If GPU memory < 40 GB, please use " --cropping 6 " instead
 
