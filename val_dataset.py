@@ -27,59 +27,6 @@ class dehaze_val_dataset(Dataset):
 
         hazy, vertical = cropping(hazy, self.crop_method)
 
-        # num_row = hazy.shape[1]
-
-        # #################### This part is for no crop, 1*6144*6144 #####################
-        # if self.crop_method == 1:
-        #     padding = torch.nn.ReflectionPad2d(72)
-        #     hazy = padding(hazy)
-        #     if num_row == 6000:
-        #         vertical = True
-        #         transform = transforms.Pad((1000,0))
-        #     else:
-        #         vertical = False
-        #         transform = transforms.Pad((0,1000))
-        #     hazy = transform(hazy)
-        #     hazy = [hazy]
-
-        # #################### This part is for 1*4096*4096+2*2048*2048 #####################
-        # if self.crop_method == 3:
-        #     padding = torch.nn.ReflectionPad2d(48)
-        #     if num_row == 6000:
-        #         vertical = True
-        #         hazy_1 = padding(hazy[:, 0:4000, 0:4000])
-        #         hazy_2 = hazy[:, 4000-48:, 0:2000+48]
-        #         hazy_3 = hazy[:, 4000-48:, 2000-48:]
-        #     else:
-        #         vertical = False
-        #         hazy_1 = padding(hazy[:, 0:4000, 0:4000])
-        #         hazy_2 = hazy[:, 0:2000+48, 4000-48:]
-        #         hazy_3 = hazy[:, 4000-48:, 2000-48:]
-        #     hazy = [hazy_1, hazy_2, hazy_3]
-
-
-        # #################### This part is for 6*2048*2048 #####################
-        # # swin Transform can run only square inputs
-        # # for 6k*4k image:
-        # if self.crop_method == 6:
-        #     if num_row == 6000:
-        #         vertical = True
-        #         hazy_1 = hazy[:, 0:2000+48, 0:2000+48]
-        #         hazy_2 = hazy[:, 0:2000+48:, 2000-48:]
-        #         hazy_3 = hazy[:, 2000-24:4000+24:, 0:2000+48]
-        #         hazy_4 = hazy[:, 2000-24:4000+24:, 2000-48:]
-        #         hazy_5 = hazy[:, 4000-48:, 0:2000+48]
-        #         hazy_6 = hazy[:, 4000-48:, 2000-48:]
-        #     else:
-        #         vertical = False
-        #         hazy_1 = hazy[:, 0:2000+48, 0:2000+48]
-        #         hazy_2 = hazy[:, 2000-48:, 0:2000+48]
-        #         hazy_3 = hazy[:, 0:2000+48, 2000-24:4000+24]
-        #         hazy_4 = hazy[:, 2000-48:, 2000-24:4000+24]
-        #         hazy_5 = hazy[:, 0:2000+48, 4000-48:]
-        #         hazy_6 = hazy[:, 2000-48:, 4000-48:]
-        #     hazy = [hazy_1, hazy_2, hazy_3, hazy_4, hazy_5, hazy_6]
-
         return hazy, vertical
 
     def __len__(self):
