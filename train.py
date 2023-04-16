@@ -78,8 +78,6 @@ parser.add_argument('--tag', help='tag of experiment')
 parser.add_argument('--eval', action='store_true', help='Perform evaluation only')
 parser.add_argument('--throughput', action='store_true', help='Test throughput only')
 
-# distributed training
-#parser.add_argument("--local_rank", type=int, required=True, help='local rank for DistributedDataParallel') # required
 
 # for acceleration
 parser.add_argument('--fused_window_process', action='store_true',
@@ -92,9 +90,6 @@ parser.add_argument('--optim', type=str,
 
 args = parser.parse_args()
 
-#args.train_batch_size = 8
-#args.model_save_dir = 'train_result'
-#args.imagenet_model = 'res2net101_v1b_26w_4s-0812c246.pth'
 
 # --- train --- #
 learning_rate = args.learning_rate
@@ -131,7 +126,6 @@ elif args.imagenet_model == 'Res2Net':
 else:
     raise Exception("Not a valid imagenet model")
 
-#MyEnsembleNet = fusion_refine(swv2_model, args.rcan_model)
 print('MyEnsembleNet parameters:', sum(param.numel() for param in MyEnsembleNet.parameters()))
 DNet = Discriminator()
 print('# Discriminator parameters:', sum(param.numel() for param in DNet.parameters()))
@@ -141,9 +135,10 @@ print('# Discriminator parameters:', sum(param.numel() for param in DNet.paramet
 G_optimizer = torch.optim.AdamW(params=MyEnsembleNet.parameters(), eps=config.TRAIN.OPTIMIZER.EPS, 
                                 betas=config.TRAIN.OPTIMIZER.BETAS, lr=0.00004, weight_decay=1e-8)
 scheduler_G = CosineLRScheduler(G_optimizer, t_initial=args.train_epoch, lr_min=2.5e-6)
-# --- Build optimizer --- #
+# --- Build optimizer for Res2Net --- #
 #G_optimizer = torch.optim.Adam(MyEnsembleNet.parameters(), lr=0.0001)
 #scheduler_G = torch.optim.lr_scheduler.MultiStepLR(G_optimizer, milestones=[5000,7000,8000], gamma=0.5)
+
 D_optim = torch.optim.Adam(DNet.parameters(), lr=0.0001)
 scheduler_D = torch.optim.lr_scheduler.MultiStepLR(D_optim, milestones=[5000,7000,8000], gamma=0.5)
 # --- Load training data --- #
@@ -167,7 +162,6 @@ if args.finetune:
     # check model location
 
 
-#MyEnsembleNet= torch.nn.DataParallel(MyEnsembleNet, device_ids=[0])
 DNet = DNet.to(device)
 DNet= torch.nn.DataParallel(DNet, device_ids=device_ids)
 writer = SummaryWriter(os.path.join(args.model_save_dir, 'tensorboard'))
@@ -184,21 +178,14 @@ loss_network.eval()
 
 msssim_loss = msssim
 
-# '''server vgg'''
-# vgg_model = vgg16(pretrained=True).features[:16]
-# vgg_model = vgg_model.to(device)
-# for param in vgg_model.parameters():
-#     param.requires_grad = False
-# loss_network = LossNetwork(vgg_model)
-# loss_network.eval()
 
-
-# --- Load the network weight --- #
-# try:
-#     MyEnsembleNet.load_state_dict(torch.load(os.path.join(args.teacher_model , 'epoch100000.pkl')))
-#     print('--- weight loaded ---')
-# except:
-#     print('--- no weight loaded ---')
+#--- Load the network weight for finetuning--- #
+if args.finetune:
+	try:
+	    MyEnsembleNet.load_state_dict(torch.load('epoch100000.pkl')))  # load finetune model
+	    print('--- weight loaded ---')
+	except:
+	    print('--- no weight loaded ---')
 
 # --- Strat training --- #
 iteration = 0
@@ -235,10 +222,6 @@ for epoch in range(train_epoch):
         D_optim.step()
         G_optimizer.step()
 
-#         if iteration % 2 == 0:
-#             frame_debug = torch.cat(
-#                 (hazy, output, clean), dim=0)
-#             writer.add_images('train_debug_img', frame_debug, iteration)
         writer.add_scalars('training', {'training total loss': total_loss.item()
                                         }, iteration)
         writer.add_scalars('training_img', {'img loss_l1': smooth_loss_l1.item(),
@@ -254,8 +237,8 @@ for epoch in range(train_epoch):
             )
 
 
-    if epoch % 25 == 0:     # 25
-        print('we are testing on epoch: ' + str(epoch))     # epoch
+    if epoch % 25 == 0:   
+        print('we are testing on epoch: ' + str(epoch))  
         with torch.no_grad():
             psnr_list = []
             ssim_list = []
@@ -263,15 +246,12 @@ for epoch in range(train_epoch):
             recon_ssim_list = []
             MyEnsembleNet.eval()
             for batch_idx, (hazy, clean) in enumerate(test_loader):
-            #for batch_idx, (hazy, vertical, hazy_1, hazy_2, hazy_3,hazy_4, hazy_5, hazy_6, clean) in enumerate(test_loader):
                 clean = clean.to(device)
                 hazy = hazy.to(device)
                 img_tensor = MyEnsembleNet(hazy)
 
                 psnr_list.extend(to_psnr(img_tensor, clean))
                 ssim_list.extend(to_ssim_skimage(img_tensor, clean))
-
-
 
             avr_psnr = sum(psnr_list) / len(psnr_list)
             avr_ssim = sum(ssim_list) / len(ssim_list)
@@ -285,25 +265,19 @@ for epoch in range(train_epoch):
             msg = 'epoch'+ str(epoch) + ', avr_psnr:' + str(avr_psnr) + ', avr_ssim:' +str(avr_ssim)
             msg_list.append(msg)
 
-            # save model
-            #torch.save(MyEnsembleNet.state_dict(), os.path.join(args.model_save_dir,'epoch'+ str(epoch+3251) + '.pkl'))
-
             if (avr_psnr > best):
                 best = avr_psnr
                 torch.save(MyEnsembleNet.state_dict(), os.path.join(args.model_save_dir,'epoch'+ str(epoch) + '.pkl'))
 
-            if (epoch > 2600 and epoch <= 4000):
-            #if epoch % 1 == 0:
+            if (epoch > 2000 and epoch <= 8000):
                 checkpoint = {
-                    #'epoch': epoch + 1,
                     'state_dict': MyEnsembleNet.state_dict(),
                     'optimizer': G_optimizer.state_dict()
                 }
-                #f_path = checkpoint_dir / 'checkpoint.pt'
                 torch.save(checkpoint, os.path.join(args.model_save_dir,'epoch'+ str(epoch) + '.pkl'))
 
         
-        # generation after testing
+        # generation while testing
         if args.generate:
             print('we are generating at epoch: ' + str(epoch))
             img_list = []
@@ -314,18 +288,9 @@ for epoch in range(train_epoch):
             if not os.path.exists(imsave_dir):
                 os.makedirs(imsave_dir)
             for batch_idx, (hazy,vertical) in enumerate(val_loader):   
-                # print(len(val_loader))
-                #start = time.time()
-
-                img_tensor = test_generate(hazy, vertical, args.cropping, MyEnsembleNet, device)
-                
-                #end = time.time()
-                #time_list.append((end - start))
+                img_tensor = test_generate(hazy, vertical, args.cropping, MyEnsembleNet, device) 
                 img_list.append(img_tensor)
-
                 imwrite(img_list[batch_idx], os.path.join(imsave_dir, str(batch_idx + 41)+'.png'))
-            #time_cost = float(sum(time_list) / len(time_list))
-            #print('running time per image: ', time_cost)
 
 
 file = open('test_info.txt','w')
