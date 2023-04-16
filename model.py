@@ -378,7 +378,6 @@ class Dehaze(nn.Module):
 
     def forward(self, input):
         x, x_layer1, x_layer2 = self.encoder(input)     # [8 1024 16 16], [8 256 64 64], [8 512 32 32] = [8 3 256 256]
-        # layer1, layer2, layer3, layer4 = SwinT(input)     # []
 
         x_mid = self.mid_conv(x)
 
@@ -403,36 +402,22 @@ class Dehaze(nn.Module):
 class DehazeSwinT(nn.Module):
     def __init__(self, imagenet_model):
         super(DehazeSwinT, self).__init__()
-
-        # self.encoder = Res2Net(Bottle2neck, [3, 4, 23, 3], baseWidth=26, scale=4)
-        # res2net101 = Pre_Res2Net.Res2Net(Bottle2neck, [3, 4, 23, 3], baseWidth=26, scale=4)
-        # res2net101.load_state_dict(torch.load(os.path.join(imagenet_model,'res2net101_v1b_26w_4s-0812c246.pth')))   #change model name
-        # pretrained_dict = res2net101.state_dict()
-        # model_dict = self.encoder.state_dict()
-        # key_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
-        # model_dict.update(key_dict)
-        # self.encoder.load_state_dict(model_dict)
-
-        # check if imagenet_model is swin transformer
+        
         checkpoint = torch.load('swinv2_base_patch4_window8_256.pth', map_location='cpu')
         imagenet_model.load_state_dict(checkpoint['model'])
-        #self.encoder = torch.nn.Sequential(*(list(imagenet_model.children())[:-3]))         # check if removed
         self.encoder = imagenet_model
 
         # Incorporate with SwinTransformerV2
-
         self.mid_conv = DehazeBlock(default_conv, 1024, 3)
 
         self.up_block1 = nn.PixelShuffle(2)
         self.attention1 = DehazeBlock(default_conv, 256, 3)
         self.attention2 = DehazeBlock(default_conv, 192, 3)
         self.attention3 = DehazeBlock(default_conv, 112, 3)
-        #self.enhancer = Enhancer(28, 28)
         self.enhancer = Enhancer(15, 15)
 
 
     def forward(self, input):
-        #x, x_layer1, x_layer2 = self.encoder(input)
         x, layer_feature = self.encoder(input)      # [0-2]: [4096,128] [1024,256] [256,512]  [3]=x: [64,1024]
 
         # change dimension
@@ -468,35 +453,31 @@ class DehazeSwinT(nn.Module):
 class fusion_refine(nn.Module):
     def __init__(self, imagenet_model, rcan_model):
         super(fusion_refine, self).__init__()
-#         self.densemap=DenseHazy()
+
+        # first branch
         if imagenet_model.__class__.__name__ == 'SwinTransformerV2':
             self.feature_extract=DehazeSwinT(imagenet_model)    # parameters: 109313725
         else:
             self.feature_extract=Dehaze(imagenet_model)  # parameters: 49347811
-#         self.tail = nn.Sequential(nn.ReflectionPad2d(3), nn.Conv2d(63, 3, kernel_size=7, padding=0), nn.Tanh())
+            
+        # second branch
         self.pre_trained_rcan=rcan()                     # parameters: 996651
 
+        # tail
         if imagenet_model.__class__.__name__ == 'SwinTransformerV2':
             self.tail1 = nn.Sequential(nn.ReflectionPad2d(3), nn.Conv2d(47, 3, kernel_size=7, padding=0), nn.Tanh())
         else:
             self.tail1 = nn.Sequential(nn.ReflectionPad2d(3), nn.Conv2d(60, 3, kernel_size=7, padding=0), nn.Tanh())
-        #self.tail1 = nn.Sequential(nn.ReflectionPad2d(3), nn.Conv2d(60, 3, kernel_size=7, padding=0), nn.Tanh())
-#         self.tail2 = nn.Sequential(nn.Conv2d(16, 3, kernel_size=3, padding=(3//2), bias=True), nn.ReLU(inplace=True))
-#         self.tail = nn.Sequential(nn.Conv2d(34, 3, kernel_size=5, padding=(5//2), bias=True), nn.ReLU(inplace=True))
-#         self.recon1 = nn.Sequential(nn.Conv2d(60, 21, kernel_size=3, padding=(3//2), bias=True), nn.ReLU(inplace=True))
-#         self.recon2 = nn.Sequential(nn.Conv2d(24, 3, kernel_size=3, padding=(3//2), bias=True), nn.ReLU(inplace=True))
+
         
 
     def forward(self, input):
-#         densemap=self.densemap(input)
+
         feature=self.feature_extract(input)                     # input:[8,3,256,256]   -> feature:[8,28,256,256]
         rcan_out = self.pre_trained_rcan(input)
         x = torch.cat([feature, rcan_out], 1)                   # swin 15+32=47
-#         x = self.tail(x)
         feat_hazy = self.tail1(x)
-#         feat_clear = torch.cat([self.recon1(x), feat_hazy], dim=1)
-#         out_hazy = self.recon2(feat_clear)
-#         out_clear = feat_hazy + input
+
         return feat_hazy
 #         return x
 
