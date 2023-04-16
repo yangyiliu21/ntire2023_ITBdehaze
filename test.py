@@ -105,7 +105,7 @@ swv2_model = build_model(config)
 # --- Define the network --- #
 if args.imagenet_model == 'SwinTransformerV2':
     MyEnsembleNet = fusion_refine(swv2_model, args.rcan_model)
-elif args.imagenet_model == 'fromHuan':
+elif args.imagenet_model == 'Res2Net':
     MyEnsembleNet = fusion_refine(args.imagenet_model, args.rcan_model)
 
 #SMyEnsembleNet = fusion_refine(args.imagenet_model, args.rcan_model)
@@ -124,17 +124,8 @@ MyEnsembleNet= torch.nn.DataParallel(MyEnsembleNet, device_ids=device_ids)
 
 
 # --- Load the network weight --- #
-#MyEnsembleNet.load_state_dict(torch.load(args.ckpt_path)['state_dict']) torch.load('epoch7075.pkl')
 MyEnsembleNet.load_state_dict(torch.load(args.ckpt_path))              
-#MyEnsembleNet.load_state_dict(torch.load('epoch7075.pkl'))     
-#MyEnsembleNet.load_state_dict(torch.load('./fromHuan/ckpt_huan/epoch4450.pkl'))      #'./ckpt_huan/epoch2625.pkl'
-#MyEnsembleNet.module.load_state_dict(torch.load( './ckpt_huan/epoch50.pkl'))      #'./ckpt_huan/epoch2625.pkl'
 
-# try:
-#     MyEnsembleNet.load_state_dict(torch.load( 'epoch600.pkl'))
-#     print('--- weight loaded ---')
-# except:
-#     print('--- no weight loaded ---')
 
 # --- Strat testing --- #
 with torch.no_grad():
