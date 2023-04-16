@@ -18,7 +18,6 @@ class dehaze_val_dataset(Dataset):
 
     def __getitem__(self, index, is_train=True):
         hazy = Image.open(self.root_hazy +'/'+ self.list_test[index])
-        #hazy = cv2.imread(self.root_hazy +'/'+ self.list_test[index]) 
         hazy = self.transform(hazy)
 
         if hazy.shape[0] == 4:
@@ -48,7 +47,6 @@ class dehaze_val_dataset_ohaze(Dataset):
 
     def __getitem__(self, index, is_train=True):
         hazy = Image.open(self.root_hazy +'/'+ self.list_test[index])
-        #hazy = cv2.imread(self.root_hazy +'/'+ self.list_test[index]) 
         hazy = self.transform(hazy)
         hazy_shape = hazy.shape
 
