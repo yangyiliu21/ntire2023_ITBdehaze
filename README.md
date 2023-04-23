@@ -1,7 +1,7 @@
 ##  A Data-Centric Solution to NonHomogeneous Dehazing via Vision Transformer
 
 This is the official PyTorch implementation of A Data-Centric Solution to NonHomogeneous Dehazing via Vision Transformer.  
-See more details in  [[report]](TBD) , [[paper]](https://arxiv.org/pdf/2304.07874.pdf)
+See more details in  [[report]](TBD) , [[paper]](https://arxiv.org/pdf/2304.07874.pdf), [[certificate]](https://cvlai.net/ntire/2023/NTIRE2023awards_certificates.pdf)
 
 Our solution competes in NTIRE 2023 Non-homogeneous Dehazing Challenge.
 ### Dependencies and Installation
