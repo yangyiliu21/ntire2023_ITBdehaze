@@ -51,12 +51,12 @@ Results on NTIRE 2023 NonHomogeneous Dehazing Challenge test data:
 ## Citation
 If you use the code in this repo for your work, please cite the following bib entries:
 
-### Our arxiv version:
 ```latex
-@article{liu2023data,
+@inproceedings{liu2023data,
   title={A Data-Centric Solution to NonHomogeneous Dehazing via Vision Transformer},
   author={Liu, Yangyi and Liu, Huan and Li, Liangyan and Wu, Zijun and Chen, Jun},
-  journal={arXiv preprint arXiv:2304.07874},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={1406--1415},
   year={2023}
 }
 ```
