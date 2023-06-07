@@ -3,7 +3,7 @@
 This is the official PyTorch implementation of A Data-Centric Solution to NonHomogeneous Dehazing via Vision Transformer.  
 See more details in  [[report]](https://openaccess.thecvf.com/content/CVPR2023W/NTIRE/papers/Ancuti_NTIRE_2023_HR_NonHomogeneous_Dehazing_Challenge_Report_CVPRW_2023_paper.pdf) , [[paper]](https://arxiv.org/pdf/2304.07874.pdf), [[certificate]](https://cvlai.net/ntire/2023/NTIRE2023awards_certificates.pdf)
 
-Our solution competes in NTIRE 2023 Non-homogeneous Dehazing Challenge.
+Our solution competes in NTIRE 2023 HR Non-homogeneous Dehazing Challenge.
 ### Dependencies and Installation
 
 * python3.7
