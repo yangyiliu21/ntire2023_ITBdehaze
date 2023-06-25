@@ -6,8 +6,8 @@ See more details in  [[report]](https://openaccess.thecvf.com/content/CVPR2023W/
 Our solution competes in NTIRE 2023 HR Non-homogeneous Dehazing Challenge.
 
 ## News
-- **(2023/6/18)**  We are the winner of the [NTIRE 2023 HR Non-homogeneous Dehazing Challenge](https://cvlai.net/ntire/2023/)
-- **(2022/6/01)**  We are invited to present our method at the [NTIRE 2023 HR Non-homogeneous Dehazing Challenge](https://cvlai.net/ntire/2023/)
+- **(2023/6/18)**  We are the winner of the [NTIRE 2023 HR Non-homogeneous Dehazing Challenge!](https://cvlai.net/ntire/2023/)
+- **(2022/6/01)**  We are invited to present our method at the [NTIRE 2023 HR Non-homogeneous Dehazing Challenge.](https://cvlai.net/ntire/2023/)
 
   
 ### Dependencies and Installation
