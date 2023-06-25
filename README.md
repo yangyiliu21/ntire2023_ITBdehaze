@@ -4,6 +4,12 @@ This is the official PyTorch implementation of A Data-Centric Solution to NonHom
 See more details in  [[report]](https://openaccess.thecvf.com/content/CVPR2023W/NTIRE/papers/Ancuti_NTIRE_2023_HR_NonHomogeneous_Dehazing_Challenge_Report_CVPRW_2023_paper.pdf) , [[paper]](https://arxiv.org/pdf/2304.07874.pdf), [[certificate]](https://cvlai.net/ntire/2023/NTIRE2023awards_certificates.pdf)
 
 Our solution competes in NTIRE 2023 HR Non-homogeneous Dehazing Challenge.
+
+## News
+- **(2023/6/18)**  We are the winner of the [NTIRE 2023 HR Non-homogeneous Dehazing Challenge](https://cvlai.net/ntire/2023/)
+- **(2022/6/01)**  We are invited to present our method at the [NTIRE 2023 HR Non-homogeneous Dehazing Challenge](https://cvlai.net/ntire/2023/)
+
+  
 ### Dependencies and Installation
 
 * python3.7
