@@ -22,7 +22,7 @@ Our solution competes in NTIRE 2023 HR Non-homogeneous Dehazing Challenge, achie
 ### Pretrained Weights & Dataset
 
 - Download [ImageNet pretrained SwinTransformer V2 weights](https://github.com/SwinTransformer/storage/releases/download/v2.0.0/swinv2_base_patch4_window8_256.pth) and [our model weights](https://drive.google.com/file/d/1Nx5RpWA6CLqqLpsTrXCvEVcgh9l899ts/view?usp=share_link). 
-- Download our [dataset](https://drive.google.com/drive/folders/1NwWRuQ8kWeCCkRsMv0IANFpDD40I_kyR?usp=share_link)
+- Download our [dataset](https://drive.google.com/drive/folders/1NwWRuQ8kWeCCkRsMv0IANFpDD40I_kyR?usp=share_link) or the original [dataset & gamma correction code](https://drive.google.com/drive/folders/1spwHOudYRfrMb2x4nKK2r5VRcgDx1-zD?usp=drive_link)
 
 
 Please put train/val/test three folders into a root folder. This root folder would be the training dataset. 
